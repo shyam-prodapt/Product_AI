@@ -2,7 +2,8 @@
 
 A production-grade, multi-agent AI system that transforms business documents into actionable product strategy insights. Upload a CSV, PDF, or DOCX — seven AI agents analyze the data in parallel and return a full strategy report with SWOT analysis, feature prioritization, opportunity scoring, product roadmap, and an executive summary. Ask follow-up questions via a grounded RAG chat interface and download a professional PDF report.
 
-**Live Demo:** https://product-strategy-frontend.onrender.com
+**Live Demo:** https://product-strategy-frontend-j8cb.onrender.com  
+**Backend API:** https://product-strategy-backend.onrender.com/docs
 
 ---
 

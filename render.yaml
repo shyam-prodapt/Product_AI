@@ -20,7 +20,7 @@ services:
       - key: PINECONE_ENVIRONMENT
         value: us-east-1
       - key: CORS_ORIGINS
-        value: '["https://product-strategy-frontend.onrender.com"]'
+        value: '["https://product-strategy-frontend-j8cb.onrender.com"]'
       - key: UPLOAD_DIR
         value: /tmp/uploads
       - key: MAX_FILE_SIZE_MB
