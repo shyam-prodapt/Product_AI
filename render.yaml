@@ -1,0 +1,43 @@
+services:
+  # ── Backend (FastAPI) ────────────────────────────────────────────────────────
+  - type: web
+    name: product-strategy-backend
+    env: python
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        value: learner025
+      - key: OPENAI_BASE_URL
+        value: https://keygateway.arshnivlabs.com/v1
+      - key: PINECONE_API_KEY
+        sync: false                        # ← set manually in Render dashboard
+      - key: PINECONE_INDEX_NAME
+        value: product-strategy-index
+      - key: PINECONE_ENVIRONMENT
+        value: us-east-1
+      - key: CORS_ORIGINS
+        value: '["https://product-strategy-frontend.onrender.com"]'
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: MAX_FILE_SIZE_MB
+        value: "50"
+
+  # ── Frontend (React / Vite static site) ─────────────────────────────────────
+  - type: web
+    name: product-strategy-frontend
+    env: static
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://product-strategy-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
