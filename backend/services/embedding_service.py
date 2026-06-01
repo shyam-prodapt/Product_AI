@@ -1,20 +1,25 @@
-from openai import AsyncOpenAI
-from config import settings
 from typing import List
 import asyncio
 
-client = AsyncOpenAI(
-    api_key=settings.openai_api_key,
-    base_url=settings.openai_base_url,
-)
+_model = None
+
+def _get_model():
+    global _model
+    if _model is None:
+        from fastembed import TextEmbedding
+        _model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    return _model
 
 async def get_embedding(text: str) -> List[float]:
-    response = await client.embeddings.create(
-        input=text[:8000],
-        model=settings.embedding_model,
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        None,
+        lambda: list(_get_model().embed([text[:8000]]))[0].tolist()
     )
-    return response.data[0].embedding
 
 async def get_embeddings_batch(texts: List[str]) -> List[List[float]]:
-    tasks = [get_embedding(t) for t in texts]
-    return await asyncio.gather(*tasks)
+    loop = asyncio.get_event_loop()
+    truncated = [t[:8000] for t in texts]
+    def _embed():
+        return [emb.tolist() for emb in _get_model().embed(truncated)]
+    return await loop.run_in_executor(None, _embed)
