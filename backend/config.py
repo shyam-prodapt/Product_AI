@@ -4,6 +4,9 @@ from typing import List
 class Settings(BaseSettings):
     openai_api_key: str = "learner025"
     openai_base_url: str = "https://keygateway.arshnivlabs.com/v1"
+    groq_api_key: str = ""
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_model: str = "llama-3.1-8b-instant"
     pinecone_api_key: str = "placeholder"
     pinecone_index_name: str = "product-strategy-index"
     pinecone_environment: str = "us-east-1"
@@ -11,10 +14,9 @@ class Settings(BaseSettings):
     max_file_size_mb: int = 50
     upload_dir: str = "./uploads"
     model: str = "gpt-4o-mini"
-    embedding_model: str = "text-embedding-3-small"
 
     class Config:
-        env_file = ("../.env", ".env")   # look in project root first, then backend/
+        env_file = ("../.env", ".env")
         extra = "ignore"
 
 settings = Settings()
