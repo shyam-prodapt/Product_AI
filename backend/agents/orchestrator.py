@@ -68,20 +68,37 @@ class Orchestrator:
             self.get_context("executive summary strategy recommendations roadmap"),
         )
 
-        swot_result, exec_result = await asyncio.gather(
-            swot_agent.run(swot_context),
-            exec_agent.run(exec_context),
-        )
+        try:
+            swot_result = await swot_agent.run(swot_context)
+        except Exception as e:
+            swot_result = {"strengths": [], "weaknesses": [], "opportunities": [], "threats": []}
+            swot_agent_result_status = AgentStatus.FAILED
+            swot_error = str(e)
+        else:
+            swot_agent_result_status = AgentStatus.COMPLETED
+            swot_error = None
+
+        try:
+            exec_result = await exec_agent.run(exec_context)
+        except Exception as e:
+            exec_result = {"executive_summary": "Analysis unavailable — LLM gateway unreachable from this server.", "strategic_recommendations": [], "key_metrics": {}, "action_plan": []}
+            exec_agent_result_status = AgentStatus.FAILED
+            exec_error = str(e)
+        else:
+            exec_agent_result_status = AgentStatus.COMPLETED
+            exec_error = None
 
         swot_agent_result = AgentResult(
             agent_name=swot_agent.name,
-            status=AgentStatus.COMPLETED,
+            status=swot_agent_result_status,
             output=swot_result if isinstance(swot_result, dict) else {},
+            error=swot_error,
         )
         exec_agent_result = AgentResult(
             agent_name=exec_agent.name,
-            status=AgentStatus.COMPLETED,
+            status=exec_agent_result_status,
             output=exec_result if isinstance(exec_result, dict) else {},
+            error=exec_error,
         )
 
         all_results: List[AgentResult] = list(agent_results) + [swot_agent_result, exec_agent_result]
